@@ -1,33 +1,19 @@
 const { Router } = require('express')
-const axios = require('axios')
-const Dev = require('../src/models/Dev')
+const DevController = require('./controllers/DevController')
+const SearchController = require('./controllers/SearchController')
 
 const routes = Router();
 
-routes.post('/devs', async (req, res) => {
-    const { github_username, techs, latitude, longitude } = req.body;
+// index - exibir a lista
+// show - exibir um unico
+// store - criar dev
+// update - atualizar
+// destroy - excluir
 
-    const apiResponse = await axios.get(`https://api.github.com/users/${github_username}`)
 
-    const { name = login, avatar_url, bio } = apiResponse.data;
+routes.get('/devs', DevController.index)
+routes.post('/devs', DevController.store)
 
-    const techsArray = techs.split(',').map(tech => tech.trim());
-
-    const location = {
-        type: 'Point',
-        coordinates: [longitude, latitude]
-    }
-
-    const dev = await Dev.create({
-        github_username,
-        name,
-        avatar_url,
-        bio,
-        techs: techsArray,
-        location,
-    })
-
-    return res.json(dev)
-})
+routes.get('/search', SearchController.index)
 
 module.exports = routes;
